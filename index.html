@@ -21,573 +21,193 @@
       --sans:      'Noto Sans SC', sans-serif;
       --mono:      'Space Mono', monospace;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: var(--sans);
-      font-weight: 300;
-      line-height: 1.7;
-      cursor: none;
-      overflow-x: hidden;
-    }
+    body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-weight: 300; line-height: 1.7; cursor: none; overflow-x: hidden; }
 
-    /* ── 光标 ── */
-    .cursor {
-      position: fixed; width: 10px; height: 10px;
-      background: var(--accent); border-radius: 50%;
-      pointer-events: none; z-index: 9999;
-      transition: transform 0.15s ease, opacity 0.2s;
-      transform: translate(-50%, -50%);
-    }
-    .cursor-ring {
-      position: fixed; width: 36px; height: 36px;
-      border: 1px solid var(--accent); border-radius: 50%;
-      pointer-events: none; z-index: 9998;
-      transition: transform 0.35s ease, width 0.3s, height 0.3s, opacity 0.2s;
-      transform: translate(-50%, -50%); opacity: 0.5;
-    }
+    .cursor { position: fixed; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; transition: transform 0.15s ease; transform: translate(-50%,-50%); }
+    .cursor-ring { position: fixed; width: 36px; height: 36px; border: 1px solid var(--accent); border-radius: 50%; pointer-events: none; z-index: 9998; transition: transform 0.35s ease; transform: translate(-50%,-50%); opacity: 0.5; }
 
-    /* ── 导航 ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 48px;
-    }
-    .nav-logo-placeholder {
-      width: 40px; height: 40px;
-      border: 1.5px solid var(--ink);
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--mono); font-size: 11px;
-      letter-spacing: 0.05em; color: var(--ink);
-      text-decoration: none; flex-shrink: 0;
-    }
-    /* ↓ 有logo时取消注释，删除上面的placeholder */
-    /* .nav-logo img { width:40px; height:40px; object-fit:contain; } */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; }
+    .nav-logo-placeholder { width: 40px; height: 40px; border: 1.5px solid var(--ink); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--ink); text-decoration: none; flex-shrink: 0; }
     .nav-links { display: flex; gap: 40px; list-style: none; }
-    .nav-links a {
-      font-family: var(--mono); font-size: 11px;
-      letter-spacing: 0.15em; text-transform: uppercase;
-      color: var(--ink); text-decoration: none;
-      position: relative; padding-bottom: 2px;
-    }
-    .nav-links a::after {
-      content: ''; position: absolute; bottom: 0; left: 0;
-      width: 0; height: 1px; background: var(--accent);
-      transition: width 0.3s ease;
-    }
-    .nav-links a:hover::after,
-    .nav-links a.active::after { width: 100%; }
+    .nav-links a { font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink); text-decoration: none; position: relative; padding-bottom: 2px; }
+    .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--accent); transition: width 0.3s; }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
 
-    /* ── 页面切换 ── */
     section { display: none; min-height: 100vh; }
     section.active { display: block; }
 
-    /* ════════════════════════════
-       HOME
-    ════════════════════════════ */
-    .hero-marquee-wrap {
-      height: 100vh;
-      display: flex; flex-direction: column; justify-content: center;
-      overflow: hidden; position: relative;
-      border-bottom: 1px solid var(--border);
-    }
-
-    /* 照片叠底层 */
-    .hero-photo {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      overflow: hidden;
-    }
-    .hero-photo img {
-      /* ↓ 替换 photo.jpg 为你的照片文件名，放在同目录下 */
-      width: 100%; height: 100%;
-      object-fit: cover;
-      object-position: center top;
-      opacity: 0.13;
-      filter: grayscale(100%) contrast(1.1);
-      mix-blend-mode: multiply;
-    }
-    /* 照片占位（无图时显示渐变） */
-    .hero-photo-placeholder {
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(200,85,61,0.04) 0%, rgba(61,107,140,0.06) 100%);
-    }
-
-    .marquee-track {
-      display: flex; white-space: nowrap; will-change: transform;
-      position: relative; z-index: 1;
-    }
-    .marquee-track.slow    { animation: marquee 28s linear infinite; }
-    .marquee-track.slower  { animation: marquee 38s linear infinite reverse; opacity: 0.18; }
-    @keyframes marquee {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
-    .marquee-name {
-      font-family: var(--serif);
-      font-size: clamp(80px, 13vw, 180px);
-      font-weight: 400; font-style: italic;
-      letter-spacing: -0.02em; color: var(--ink);
-      padding-right: 80px; line-height: 1; user-select: none;
-    }
+    /* HERO */
+    .hero-marquee-wrap { height: 100vh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; position: relative; border-bottom: 1px solid var(--border); }
+    .hero-photo { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+    .hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; opacity: 0.13; filter: grayscale(100%) contrast(1.1); mix-blend-mode: multiply; }
+    .hero-photo-placeholder { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(200,85,61,0.04) 0%, rgba(61,107,140,0.06) 100%); }
+    .marquee-track { display: flex; white-space: nowrap; will-change: transform; position: relative; z-index: 1; }
+    .marquee-track.slow { animation: marquee 28s linear infinite; }
+    .marquee-track.slower { animation: marquee 38s linear infinite reverse; opacity: 0.18; }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .marquee-name { font-family: var(--serif); font-size: clamp(80px,13vw,180px); font-weight: 400; font-style: italic; letter-spacing: -0.02em; color: var(--ink); padding-right: 80px; line-height: 1; user-select: none; }
     .marquee-name span { color: var(--accent); }
+    .hero-sub { position: absolute; bottom: 48px; right: 48px; text-align: right; z-index: 2; animation: fadeUp 1s 0.5s both; }
+    .hero-sub p { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mid); line-height: 2; }
+    .hero-sub .role { font-family: var(--serif); font-size: 18px; color: var(--ink); font-style: italic; letter-spacing: 0; text-transform: none; }
+    .hero-scroll { position: absolute; bottom: 48px; left: 48px; display: flex; align-items: center; gap: 12px; z-index: 2; animation: fadeUp 1s 0.8s both; }
+    .scroll-line { width: 40px; height: 1px; background: var(--ink-light); position: relative; overflow: hidden; }
+    .scroll-line::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--accent); animation: scrollLine 2s 1.5s ease infinite; }
+    @keyframes scrollLine { 0% { left:-100%; } 100% { left:100%; } }
+    .scroll-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-light); }
 
-    .hero-sub {
-      position: absolute; bottom: 48px; right: 48px;
-      text-align: right; z-index: 2;
-      animation: fadeUp 1s 0.5s both;
-    }
-    .hero-sub p {
-      font-family: var(--mono); font-size: 11px;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--ink-mid); line-height: 2;
-    }
-    .hero-sub .role {
-      font-family: var(--serif); font-size: 18px;
-      color: var(--ink); font-style: italic;
-      letter-spacing: 0; text-transform: none;
-    }
-    .hero-scroll {
-      position: absolute; bottom: 48px; left: 48px;
-      display: flex; align-items: center; gap: 12px;
-      z-index: 2; animation: fadeUp 1s 0.8s both;
-    }
-    .scroll-line {
-      width: 40px; height: 1px; background: var(--ink-light);
-      position: relative; overflow: hidden;
-    }
-    .scroll-line::after {
-      content: ''; position: absolute; top: 0; left: -100%;
-      width: 100%; height: 100%; background: var(--accent);
-      animation: scrollLine 2s 1.5s ease infinite;
-    }
-    @keyframes scrollLine {
-      0%   { left: -100%; }
-      100% { left: 100%; }
-    }
-    .scroll-label {
-      font-family: var(--mono); font-size: 10px;
-      letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-light);
-    }
-
-    /* ── About ── */
-    .about-section {
-      padding: 120px 48px;
-      display: grid; grid-template-columns: 1fr 1.6fr; gap: 80px;
-      max-width: 1200px; margin: 0 auto;
-      border-bottom: 1px solid var(--border);
-    }
-    .about-label {
-      font-family: var(--mono); font-size: 10px;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--ink-light); margin-bottom: 24px;
-    }
-    .about-left h2 {
-      font-family: var(--serif);
-      font-size: clamp(36px, 4vw, 56px);
-      font-weight: 400; line-height: 1.15; font-style: italic;
-    }
+    /* ABOUT */
+    .about-section { padding: 120px 48px; display: grid; grid-template-columns: 1fr 1.6fr; gap: 80px; max-width: 1200px; margin: 0 auto; border-bottom: 1px solid var(--border); }
+    .about-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 24px; }
+    .about-left h2 { font-family: var(--serif); font-size: clamp(36px,4vw,56px); font-weight: 400; line-height: 1.15; font-style: italic; }
     .about-left h2 em { color: var(--accent); font-style: normal; }
-    .about-right p {
-      font-size: 15px; color: var(--ink-mid);
-      margin-bottom: 20px; line-height: 1.9;
-    }
-    .placeholder-note {
-      background: rgba(200,85,61,0.06);
-      border-left: 2px solid var(--accent);
-      padding: 10px 14px;
-      font-size: 12px; color: var(--accent);
-      font-family: var(--mono); margin-bottom: 20px;
-    }
+    .about-right p { font-size: 15px; color: var(--ink-mid); margin-bottom: 20px; line-height: 1.9; }
 
-    /* ── 简历可视化 ── */
-    .resume-section {
-      padding: 100px 48px;
-      max-width: 1200px; margin: 0 auto;
-    }
-    .resume-section > h3 {
-      font-family: var(--serif); font-size: 36px;
-      font-weight: 400; font-style: italic; margin-bottom: 64px;
-    }
-    .resume-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
-    }
-    .resume-col-title {
-      font-family: var(--mono); font-size: 10px;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--ink-light); margin-bottom: 32px;
-      padding-bottom: 12px; border-bottom: 1px solid var(--border);
-    }
+    /* RESUME */
+    .resume-section { padding: 100px 48px; max-width: 1200px; margin: 0 auto; }
+    .resume-section > h3 { font-family: var(--serif); font-size: 36px; font-weight: 400; font-style: italic; margin-bottom: 64px; }
+    .resume-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+    .resume-col-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 32px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .resume-divider { border: none; border-top: 1px dashed var(--border); margin: 36px 0; }
 
-    /* 时间线 */
-    .timeline-item {
-      display: grid; grid-template-columns: 90px 1fr; gap: 20px;
-      margin-bottom: 40px;
-      opacity: 0; transform: translateY(16px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
+    .timeline-item { display: grid; grid-template-columns: 90px 1fr; gap: 20px; margin-bottom: 36px; opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
     .timeline-item.visible { opacity: 1; transform: translateY(0); }
-    .timeline-year {
-      font-family: var(--mono); font-size: 11px;
-      color: var(--ink-light); padding-top: 3px; line-height: 1.6;
-    }
-    .timeline-content h4 {
-      font-size: 15px; font-weight: 500; margin-bottom: 4px;
-    }
-    .timeline-content .org {
-      font-family: var(--mono); font-size: 11px;
-      color: var(--accent); letter-spacing: 0.05em; margin-bottom: 6px;
-    }
-    .timeline-content .type-badge {
-      display: inline-block;
-      font-family: var(--mono); font-size: 9px;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      border: 1px solid var(--border); padding: 2px 7px;
-      border-radius: 2px; color: var(--ink-light);
-      margin-bottom: 6px;
-    }
-    .timeline-content p {
-      font-size: 13px; color: var(--ink-mid); line-height: 1.7;
-    }
+    .timeline-year { font-family: var(--mono); font-size: 11px; color: var(--ink-light); padding-top: 3px; line-height: 1.6; }
+    .timeline-content h4 { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+    .timeline-content .org { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.05em; margin-bottom: 6px; }
+    .timeline-content .type-badge { display: inline-block; font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; border: 1px solid var(--border); padding: 2px 7px; border-radius: 2px; color: var(--ink-light); margin-bottom: 6px; }
+    .timeline-content p { font-size: 13px; color: var(--ink-mid); line-height: 1.75; }
+    .timeline-content .course-list { font-size: 12px; color: var(--ink-light); line-height: 1.9; margin-top: 6px; }
+    .timeline-content .course-list span { color: var(--ink-mid); }
 
-    /* 奖项列表 */
-    .award-item {
-      display: flex; justify-content: space-between; align-items: baseline;
-      gap: 16px; padding: 14px 0;
-      border-bottom: 1px solid var(--border);
-      opacity: 0; transform: translateY(10px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
+    .award-item { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--border); opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
     .award-item.visible { opacity: 1; transform: translateY(0); }
     .award-name { font-size: 13px; color: var(--ink-mid); flex: 1; }
-    .award-year {
-      font-family: var(--mono); font-size: 11px;
-      color: var(--ink-light); white-space: nowrap;
-    }
+    .award-year { font-family: var(--mono); font-size: 11px; color: var(--ink-light); white-space: nowrap; }
 
-    /* 技能 */
-    .skills-wrap { margin-top: 8px; }
-    .skill-section-label {
-      font-family: var(--mono); font-size: 9px;
-      letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--ink-light); margin: 24px 0 12px;
-    }
-    .skill-row {
-      display: flex; align-items: center; gap: 16px;
-      margin-bottom: 14px;
-      opacity: 0; transform: translateX(-10px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
+    /* 技能三板块 */
+    .skill-block-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-light); margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px dashed var(--border); }
+
+    /* 语言徽章 */
+    .lang-badges { display: flex; gap: 10px; flex-wrap: wrap; }
+    .lang-badge { display: flex; flex-direction: column; align-items: center; padding: 10px 18px; border: 1px solid var(--border); border-radius: 2px; gap: 2px; opacity: 0; transform: translateY(8px); transition: opacity 0.4s, transform 0.4s; }
+    .lang-badge.visible { opacity: 1; transform: translateY(0); }
+    .lang-badge:hover { border-color: var(--accent-2); }
+    .lang-badge-name { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mid); }
+    .lang-badge-score { font-family: var(--serif); font-size: 20px; font-style: italic; color: var(--accent-2); line-height: 1; }
+    .lang-badge-sub { font-family: var(--mono); font-size: 9px; color: var(--ink-light); letter-spacing: 0.08em; }
+
+    /* 专业技能柱状图 */
+    .skill-row { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; opacity: 0; transform: translateX(-10px); transition: opacity 0.5s ease, transform 0.5s ease; }
     .skill-row.visible { opacity: 1; transform: translateX(0); }
-    .skill-name { font-size: 13px; color: var(--ink-mid); width: 170px; flex-shrink: 0; }
+    .skill-name { font-size: 13px; color: var(--ink-mid); width: 150px; flex-shrink: 0; }
     .skill-bar { flex: 1; height: 2px; background: var(--border); position: relative; overflow: hidden; }
-    .skill-fill {
-      position: absolute; top: 0; left: 0; height: 100%;
-      background: var(--ink); width: 0; transition: width 1s ease;
-    }
+    .skill-fill { position: absolute; top: 0; left: 0; height: 100%; background: var(--ink); width: 0; transition: width 1s ease; }
     .skill-row.visible .skill-fill { width: var(--w); }
+    .skill-pct { font-family: var(--mono); font-size: 10px; color: var(--ink-light); width: 32px; text-align: right; flex-shrink: 0; }
 
-    /* 软件图标行 */
-    .software-row {
-      display: flex; flex-wrap: wrap; gap: 16px;
-      margin-top: 8px;
-      opacity: 0; transform: translateY(8px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-    .software-row.visible { opacity: 1; transform: translateY(0); }
-    .sw-chip {
-      font-family: var(--mono); font-size: 10px;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      border: 1px solid var(--border); padding: 5px 10px;
-      border-radius: 2px; color: var(--ink-mid);
-    }
+    /* 其他技能卡片 */
+    .other-skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .other-skill-card { border: 1px solid var(--border); padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; opacity: 0; transform: translateY(10px); transition: opacity 0.45s, transform 0.45s; }
+    .other-skill-card.visible { opacity: 1; transform: translateY(0); }
+    .other-skill-card:hover { border-color: rgba(26,24,20,0.28); }
+    .osk-icon { font-size: 18px; line-height: 1; flex-shrink: 0; padding-top: 2px; }
+    .osk-body { flex: 1; min-width: 0; }
+    .osk-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+    .osk-desc { font-size: 12px; color: var(--ink-light); line-height: 1.6; }
+    .osk-stat { display: inline-block; margin-top: 5px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--accent); background: rgba(200,85,61,0.07); padding: 2px 7px; border-radius: 2px; }
 
-    /* ════════════════════════════
-       PROJECTS
-    ════════════════════════════ */
+    /* PROJECTS */
     #projects { padding: 140px 48px 80px; }
-    .projects-header {
-      max-width: 1200px; margin: 0 auto 80px;
-      display: flex; align-items: flex-end; justify-content: space-between;
-      border-bottom: 1px solid var(--border); padding-bottom: 32px;
-    }
-    .projects-header h2 {
-      font-family: var(--serif);
-      font-size: clamp(40px, 5vw, 72px);
-      font-weight: 400; font-style: italic; line-height: 1;
-    }
-    .projects-header .count {
-      font-family: var(--mono); font-size: 11px;
-      letter-spacing: 0.15em; color: var(--ink-light);
-    }
-    .projects-grid {
-      max-width: 1200px; margin: 0 auto;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
-    }
-    .project-card {
-      position: relative; overflow: hidden; cursor: none;
-      aspect-ratio: 4/3;
-      display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 36px;
-    }
-    .project-card::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(26,24,20,0.88) 0%, transparent 65%);
-      z-index: 1;
-    }
+    .projects-header { max-width: 1200px; margin: 0 auto 80px; display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 32px; }
+    .projects-header h2 { font-family: var(--serif); font-size: clamp(40px,5vw,72px); font-weight: 400; font-style: italic; line-height: 1; }
+    .projects-header .count { font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; color: var(--ink-light); }
+    .projects-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .project-card { position: relative; overflow: hidden; cursor: none; aspect-ratio: 4/3; display: flex; flex-direction: column; justify-content: flex-end; padding: 36px; }
+    .project-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,24,20,0.88) 0%, transparent 65%); z-index: 1; }
     .project-card:nth-child(1) { background: #2C3E50; }
     .project-card:nth-child(2) { background: #3D2B2B; }
     .project-card:nth-child(3) { background: #2B3D35; }
     .project-card:nth-child(4) { background: #2B2B3D; }
-
     .card-inner { position: relative; z-index: 2; }
-    .card-num {
-      font-family: var(--mono); font-size: 11px;
-      letter-spacing: 0.2em; color: rgba(255,255,255,0.4); margin-bottom: 12px;
-    }
-    .card-title {
-      font-family: var(--serif);
-      font-size: clamp(20px, 2.2vw, 26px);
-      font-weight: 400; font-style: italic;
-      color: #fff; line-height: 1.2; margin-bottom: 10px;
-    }
+    .card-num { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; color: rgba(255,255,255,0.4); margin-bottom: 12px; }
+    .card-title { font-family: var(--serif); font-size: clamp(20px,2.2vw,26px); font-weight: 400; font-style: italic; color: #fff; line-height: 1.2; margin-bottom: 10px; }
     .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-    .tag {
-      font-family: var(--mono); font-size: 9px;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
-      border: 1px solid rgba(255,255,255,0.2);
-      padding: 3px 8px; border-radius: 2px;
-    }
-    .card-arrow {
-      font-family: var(--mono); font-size: 11px;
-      letter-spacing: 0.1em; color: rgba(255,255,255,0.6);
-      display: flex; align-items: center; gap: 8px;
-      transition: gap 0.3s, color 0.3s;
-    }
+    .tag { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 2px; }
+    .card-arrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 8px; transition: gap 0.3s, color 0.3s; }
     .project-card:hover .card-arrow { gap: 16px; color: #fff; }
-    .card-hover-overlay {
-      position: absolute; inset: 0; background: var(--accent);
-      transform: translateY(100%);
-      transition: transform 0.5s cubic-bezier(0.77,0,0.175,1);
-      z-index: 0; mix-blend-mode: multiply; opacity: 0.3;
-    }
+    .card-hover-overlay { position: absolute; inset: 0; background: var(--accent); transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.77,0,0.175,1); z-index: 0; mix-blend-mode: multiply; opacity: 0.3; }
     .project-card:hover .card-hover-overlay { transform: translateY(0); }
 
-    /* ── 弹出层 ── */
-    .project-modal {
-      position: fixed; inset: 0; z-index: 200;
-      display: flex; align-items: flex-end;
-      pointer-events: none; opacity: 0; transition: opacity 0.4s;
-    }
+    .project-modal { position: fixed; inset: 0; z-index: 200; display: flex; align-items: flex-end; pointer-events: none; opacity: 0; transition: opacity 0.4s; }
     .project-modal.open { pointer-events: all; opacity: 1; }
-    .modal-backdrop {
-      position: absolute; inset: 0;
-      background: rgba(26,24,20,0.5); backdrop-filter: blur(4px);
-    }
-    .modal-panel {
-      position: relative; z-index: 1;
-      background: var(--bg); width: 100%;
-      max-height: 80vh; overflow-y: auto;
-      padding: 60px 48px;
-      transform: translateY(100%);
-      transition: transform 0.5s cubic-bezier(0.77,0,0.175,1);
-    }
+    .modal-backdrop { position: absolute; inset: 0; background: rgba(26,24,20,0.5); backdrop-filter: blur(4px); }
+    .modal-panel { position: relative; z-index: 1; background: var(--bg); width: 100%; max-height: 80vh; overflow-y: auto; padding: 60px 48px; transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.77,0,0.175,1); }
     .project-modal.open .modal-panel { transform: translateY(0); }
-    .modal-close {
-      position: absolute; top: 28px; right: 48px;
-      font-family: var(--mono); font-size: 11px;
-      letter-spacing: 0.15em; text-transform: uppercase;
-      color: var(--ink-mid); background: none; border: none; cursor: none;
-    }
+    .modal-close { position: absolute; top: 28px; right: 48px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-mid); background: none; border: none; cursor: none; }
     .modal-close:hover { color: var(--accent); }
-    .modal-header {
-      display: flex; align-items: flex-start; gap: 48px;
-      margin-bottom: 36px; padding-bottom: 32px;
-      border-bottom: 1px solid var(--border);
-    }
-    .modal-num {
-      font-family: var(--mono); font-size: 48px;
-      color: var(--ink-light); line-height: 1; flex-shrink: 0;
-    }
-    .modal-title {
-      font-family: var(--serif);
-      font-size: clamp(24px, 3vw, 42px);
-      font-weight: 400; font-style: italic; line-height: 1.15;
-    }
-    .modal-meta {
-      display: flex; gap: 40px; flex-wrap: wrap; margin-bottom: 28px;
-    }
+    .modal-header { display: flex; align-items: flex-start; gap: 48px; margin-bottom: 36px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+    .modal-num { font-family: var(--mono); font-size: 48px; color: var(--ink-light); line-height: 1; flex-shrink: 0; }
+    .modal-title { font-family: var(--serif); font-size: clamp(24px,3vw,42px); font-weight: 400; font-style: italic; line-height: 1.15; }
+    .modal-meta { display: flex; gap: 40px; flex-wrap: wrap; margin-bottom: 28px; }
     .modal-meta-item { display: flex; flex-direction: column; gap: 4px; }
-    .modal-meta-label {
-      font-family: var(--mono); font-size: 9px;
-      letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-light);
-    }
+    .modal-meta-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-light); }
     .modal-meta-value { font-size: 14px; color: var(--ink-mid); }
-    .modal-origin-label {
-      font-family: var(--mono); font-size: 9px;
-      letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--ink-light); margin-bottom: 8px;
-    }
-    .modal-origin {
-      font-size: 14px; color: var(--ink-mid); line-height: 1.85;
-      max-width: 720px; margin-bottom: 16px;
-      padding-left: 16px; border-left: 2px solid var(--border);
-    }
-    .modal-desc {
-      font-size: 15px; color: var(--ink-mid);
-      line-height: 1.9; max-width: 720px; margin-bottom: 12px;
-    }
-    .modal-result {
-      font-size: 13px; color: var(--ink-light);
-      font-family: var(--mono); margin-bottom: 36px;
-    }
-    .modal-pdf-btn {
-      display: inline-flex; align-items: center; gap: 12px;
-      padding: 14px 28px; background: var(--ink);
-      color: var(--bg); font-family: var(--mono); font-size: 11px;
-      letter-spacing: 0.15em; text-transform: uppercase;
-      text-decoration: none; transition: background 0.3s, color 0.3s;
-      opacity: 0.4; pointer-events: none;
-    }
-    .modal-pdf-btn.ready {
-      opacity: 1; pointer-events: all;
-    }
+    .modal-origin-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 8px; }
+    .modal-origin { font-size: 14px; color: var(--ink-mid); line-height: 1.85; max-width: 720px; margin-bottom: 16px; padding-left: 16px; border-left: 2px solid var(--border); }
+    .modal-desc { font-size: 15px; color: var(--ink-mid); line-height: 1.9; max-width: 720px; margin-bottom: 12px; }
+    .modal-result { font-size: 13px; color: var(--ink-light); font-family: var(--mono); margin-bottom: 36px; }
+    .modal-pdf-btn { display: inline-flex; align-items: center; gap: 12px; padding: 14px 28px; background: var(--ink); color: var(--bg); font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; transition: background 0.3s, color 0.3s; opacity: 0.4; pointer-events: none; }
+    .modal-pdf-btn.ready { opacity: 1; pointer-events: all; }
     .modal-pdf-btn.ready:hover { background: var(--accent); color: #fff; }
 
-    /* ════════════════════════════
-       MORE
-    ════════════════════════════ */
+    /* MORE */
     #more { padding: 140px 48px 80px; }
     .more-inner { max-width: 1100px; margin: 0 auto; }
-    .more-inner > h2 {
-      font-family: var(--serif);
-      font-size: clamp(40px, 5vw, 72px);
-      font-weight: 400; font-style: italic;
-      margin-bottom: 80px; padding-bottom: 32px;
-      border-bottom: 1px solid var(--border);
-    }
-
+    .more-inner > h2 { font-family: var(--serif); font-size: clamp(40px,5vw,72px); font-weight: 400; font-style: italic; margin-bottom: 80px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
     .more-block { margin-bottom: 80px; }
-    .more-block-title {
-      font-family: var(--mono); font-size: 10px;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--ink-light); margin-bottom: 32px;
-      padding-bottom: 12px; border-bottom: 1px solid var(--border);
-    }
-
-    /* 摄影作品网格 */
-    .photo-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-    .photo-placeholder {
-      aspect-ratio: 3/2;
-      background: var(--ink);
-      display: flex; align-items: flex-end;
-      padding: 16px; position: relative; overflow: hidden;
-    }
-    .photo-placeholder::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(26,24,20,0.7) 0%, transparent 60%);
-    }
+    .more-block-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 32px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .photo-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    .photo-placeholder { aspect-ratio: 3/2; display: flex; align-items: flex-end; padding: 16px; position: relative; overflow: hidden; }
+    .photo-placeholder::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top,rgba(26,24,20,0.7) 0%,transparent 60%); }
     .photo-placeholder:nth-child(1) { background: #3A3228; }
     .photo-placeholder:nth-child(2) { background: #28382E; }
     .photo-placeholder:nth-child(3) { background: #283038; }
-    .photo-caption {
-      font-family: var(--mono); font-size: 10px;
-      letter-spacing: 0.1em; color: rgba(255,255,255,0.7);
-      position: relative; z-index: 1;
-    }
-    /* ↓ 有真实图片时用这个替换 photo-placeholder */
-    .photo-real {
-      aspect-ratio: 3/2; overflow: hidden;
-    }
-    .photo-real img {
-      width: 100%; height: 100%; object-fit: cover;
-      transition: transform 0.5s ease;
-    }
+    .photo-caption { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: rgba(255,255,255,0.7); position: relative; z-index: 1; }
+    .photo-real { aspect-ratio: 3/2; overflow: hidden; }
+    .photo-real img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
     .photo-real:hover img { transform: scale(1.04); }
-
-    /* 实践 & 活动列表 */
     .practice-list { list-style: none; }
-    .practice-item {
-      display: grid; grid-template-columns: 100px 1fr;
-      gap: 24px; padding: 20px 0;
-      border-bottom: 1px solid var(--border);
-      opacity: 0; transform: translateY(10px);
-      transition: opacity 0.5s, transform 0.5s;
-    }
+    .practice-item { display: grid; grid-template-columns: 100px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid var(--border); opacity: 0; transform: translateY(10px); transition: opacity 0.5s, transform 0.5s; }
     .practice-item.visible { opacity: 1; transform: translateY(0); }
-    .practice-year {
-      font-family: var(--mono); font-size: 11px;
-      color: var(--ink-light); padding-top: 2px;
-    }
+    .practice-year { font-family: var(--mono); font-size: 11px; color: var(--ink-light); padding-top: 2px; }
     .practice-content h4 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
     .practice-content p { font-size: 13px; color: var(--ink-mid); line-height: 1.7; }
-
-    /* 活动标签云 */
     .activity-tags { display: flex; flex-wrap: wrap; gap: 10px; }
-    .activity-tag {
-      font-family: var(--mono); font-size: 10px;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      border: 1px solid var(--border); padding: 7px 14px;
-      border-radius: 2px; color: var(--ink-mid);
-      transition: border-color 0.2s, color 0.2s;
-    }
+    .activity-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; border: 1px solid var(--border); padding: 7px 14px; border-radius: 2px; color: var(--ink-mid); transition: border-color 0.2s, color 0.2s; }
     .activity-tag:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* 联系方式 */
-    .contact-row {
-      display: flex; gap: 40px; flex-wrap: wrap; margin-top: 8px;
-    }
-    .contact-link {
-      display: flex; align-items: center; gap: 10px;
-      text-decoration: none; color: var(--ink-mid);
-      font-size: 14px; transition: color 0.2s;
-    }
+    .contact-row { display: flex; gap: 40px; flex-wrap: wrap; margin-top: 8px; }
+    .contact-link { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink-mid); font-size: 14px; transition: color 0.2s; }
     .contact-link:hover { color: var(--accent); }
-    .contact-link span {
-      font-family: var(--mono); font-size: 11px;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--ink-light); margin-right: 4px;
-    }
+    .contact-link span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-light); margin-right: 4px; }
 
-    /* ── 页脚 ── */
-    footer {
-      padding: 40px 48px; border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-    }
+    footer { padding: 40px 48px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
     footer p { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; color: var(--ink-light); }
     footer a { color: var(--ink-mid); text-decoration: none; }
     footer a:hover { color: var(--accent); }
 
-    /* ── 动画 ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 
-    /* ── 响应式 ── */
     @media (max-width: 768px) {
-      nav { padding: 16px 24px; }
-      .nav-links { gap: 20px; }
+      nav { padding: 16px 24px; } .nav-links { gap: 20px; }
       .about-section { grid-template-columns: 1fr; gap: 40px; padding: 80px 24px; }
-      .resume-section { padding: 60px 24px; }
-      .resume-grid { grid-template-columns: 1fr; gap: 48px; }
-      #projects { padding: 100px 24px 60px; }
-      .projects-grid { grid-template-columns: 1fr; }
-      .project-card { aspect-ratio: 3/2; }
-      #more { padding: 100px 24px 60px; }
-      .photo-grid { grid-template-columns: 1fr 1fr; }
-      .modal-panel { padding: 40px 24px; }
-      .modal-header { flex-direction: column; gap: 16px; }
+      .resume-section { padding: 60px 24px; } .resume-grid { grid-template-columns: 1fr; gap: 48px; }
+      #projects { padding: 100px 24px 60px; } .projects-grid { grid-template-columns: 1fr; }
+      #more { padding: 100px 24px 60px; } .photo-grid { grid-template-columns: 1fr 1fr; }
+      .other-skills-grid { grid-template-columns: 1fr; }
+      .modal-panel { padding: 40px 24px; } .modal-header { flex-direction: column; gap: 16px; }
       footer { flex-direction: column; gap: 12px; text-align: center; }
     }
   </style>
@@ -597,11 +217,8 @@
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 
-<!-- ══ 导航 ══ -->
 <nav>
   <a href="#" class="nav-logo-placeholder" onclick="showPage('home');return false;">XLL</a>
-  <!-- ↓ 有logo时替换上方为：
-  <a href="#" onclick="showPage('home');return false;"><img src="logo.png" alt="Logo" style="width:40px;height:40px;object-fit:contain;"></a> -->
   <ul class="nav-links">
     <li><a href="#" onclick="showPage('home');return false;" class="active" data-page="home">Home</a></li>
     <li><a href="#" onclick="showPage('projects');return false;" data-page="projects">Projects</a></li>
@@ -609,17 +226,14 @@
   </ul>
 </nav>
 
-<!-- ══════════════ HOME ══════════════ -->
+<!-- HOME -->
 <section id="home" class="active">
-
   <div class="hero-marquee-wrap">
-    <!-- 照片叠底 -->
     <div class="hero-photo">
-      <!-- ↓ 有照片时取消注释，将 photo.jpg 放在同目录 -->
+      <!-- ↓ 取消注释并将 photo.jpg 放在同目录即可显示照片叠底 -->
       <!-- <img src="photo.jpg" alt="Xiao Linlin" /> -->
       <div class="hero-photo-placeholder"></div>
     </div>
-
     <div class="marquee-track slow">
       <span class="marquee-name">XIAO <span>LIN</span> LIN &nbsp;&nbsp;</span>
       <span class="marquee-name">XIAO <span>LIN</span> LIN &nbsp;&nbsp;</span>
@@ -632,10 +246,9 @@
       <span class="marquee-name">UX RESEARCHER &nbsp;&nbsp;</span>
       <span class="marquee-name">UX RESEARCHER &nbsp;&nbsp;</span>
     </div>
-
     <div class="hero-sub">
       <p class="role">UX Researcher</p>
-      <p>University of Leeds · XR & Digital Design</p>
+      <p>University of Leeds · Digital Design Futures</p>
       <p>深圳 · Shenzhen</p>
     </div>
     <div class="hero-scroll">
@@ -644,35 +257,33 @@
     </div>
   </div>
 
-  <!-- About Me -->
   <div class="about-section">
     <div class="about-left">
       <p class="about-label">About Me</p>
       <h2>关注人，<br>关注<em>体验</em>，<br>关注边缘</h2>
     </div>
     <div class="about-right">
-      <!-- ↓ 可替换为你自己想说的话 -->
-      <p>我是 Xiao Linlin，一名对人与体验充满好奇的 UX 研究员。本科就读于杭州电子科技大学工业设计专业，目前在利兹大学攻读 Digital Design Future（XR）方向硕士。</p>
+      <p>我是 Xiao Linlin，一名对人与体验充满好奇的 UX 研究员。本科就读于杭州电子科技大学工业设计专业，目前在利兹大学攻读 Digital Design Futures 方向硕士。</p>
       <p>我的研究兴趣集中在心理健康与弱势群体，尤其关注认知障碍、儿童福祉与情绪体验等议题。我相信好的研究不只是数据收集，更是理解人、理解处境、理解那些说不出口的需求。</p>
       <p>曾在杭州深氪创意设计有限公司实习，积累了从用户调研到设计落地的实践经验。</p>
     </div>
   </div>
 
-  <!-- 简历可视化 -->
   <div class="resume-section">
     <h3>经历 &amp; 技能</h3>
     <div class="resume-grid">
 
-      <!-- 左列：教育 + 经历 -->
+      <!-- 左列：教育 + 经历 + 奖项 -->
       <div>
-        <p class="resume-col-title">Education &amp; Experience</p>
+        <p class="resume-col-title">Education</p>
 
         <div class="timeline-item">
           <div class="timeline-year">2025<br>—<br>2026</div>
           <div class="timeline-content">
-            <h4>MSc Digital Design Future (XR)</h4>
+            <h4>MSc Digital Design Futures</h4>
             <p class="org">University of Leeds</p>
-            <p>专注 XR 交互设计与用户体验研究，毕设课题：情绪觉察 VR 叙事体验</p>
+            <p>专注 XR 项目开发，包括 VR、MR 的沉浸式体验。</p>
+            <p class="course-list">主修课程：<span>Experiential Practices（体验实践）、Design for Immersion and Engagement（沉浸式与参与性设计）、Design Speculation（设计推测）、Research Methods for Digital Design Futures（数字设计未来研究方法）等</span></p>
           </div>
         </div>
 
@@ -681,27 +292,20 @@
           <div class="timeline-content">
             <h4>工业设计 本科</h4>
             <p class="org">杭州电子科技大学 HDU</p>
-            <p>加权平均分 4.56/5，成绩排名 Top 2%；多个设计项目聚焦弱势群体与社会议题</p>
+            <p>加权平均分 4.56/5，成绩排名 Top 2%</p>
+            <p class="course-list">主修课程：<span>设计色彩、设计素描、计算机辅助图形设计、计算机辅助工业设计（4.9）、视觉设计基础（5.0）、造型设计基础（5.0）、交互设计原理与方法、产品设计程序与方法（4.8）、智能产品系统设计等</span></p>
           </div>
         </div>
+
+        <hr class="resume-divider" />
+        <p class="resume-col-title">Experience</p>
 
         <div class="timeline-item">
           <div class="timeline-year">2024.9<br>—<br>2024.11</div>
           <div class="timeline-content">
             <h4>设计实习生</h4>
             <p class="org">杭州深氪创意设计有限公司</p>
-            <!-- ↓ 替换为实际实习内容描述 -->
-            <p>参与产品设计全流程，负责用户调研与原型设计</p>
-          </div>
-        </div>
-
-        <div class="timeline-item">
-          <div class="timeline-year">2022.11<br>—<br>2022.12</div>
-          <div class="timeline-content">
-            <span class="type-badge">校企合作</span>
-            <h4>CELESTRON 光学产品设计国际营</h4>
-            <p class="org">Celestron · 杭州电子科技大学</p>
-            <p>负责桌面望远镜外观设计，完成最终版本并获 Celestron 及导师反馈</p>
+            <p><!-- ↓ 替换为实际实习内容 -->参与产品设计全流程，负责用户调研与原型设计</p>
           </div>
         </div>
 
@@ -715,8 +319,21 @@
           </div>
         </div>
 
-        <!-- 奖项 -->
+        <div class="timeline-item">
+          <div class="timeline-year">2022.11<br>—<br>2022.12</div>
+          <div class="timeline-content">
+            <span class="type-badge">校企合作</span>
+            <h4>CELESTRON 光学产品设计国际营</h4>
+            <p class="org">Celestron · 杭州电子科技大学</p>
+            <p>负责桌面望远镜外观设计，完成最终版本并获 Celestron 及导师反馈</p>
+          </div>
+        </div>
+
         <p class="resume-col-title" style="margin-top:40px">Awards &amp; Honors</p>
+        <div class="award-item">
+          <span class="award-name">2025 中华设计奖高教赛道"飞思十"赛道 三等奖</span>
+          <span class="award-year">2025</span>
+        </div>
         <div class="award-item">
           <span class="award-name">第十二届全国大学生数字艺术设计大赛 三等奖</span>
           <span class="award-year">2024</span>
@@ -735,53 +352,80 @@
         </div>
       </div>
 
-      <!-- 右列：技能 -->
+      <!-- 右列：技能三板块 -->
       <div>
-        <p class="resume-col-title">Skills &amp; Tools</p>
+        <p class="resume-col-title">Skills</p>
         <div class="skills-wrap">
 
-          <p class="skill-section-label">Research Methods</p>
-          <div class="skill-row" style="--w:92%">
-            <span class="skill-name">用户访谈 / Interview</span>
-            <div class="skill-bar"><div class="skill-fill"></div></div>
-          </div>
-          <div class="skill-row" style="--w:88%">
-            <span class="skill-name">问卷设计 / Survey</span>
-            <div class="skill-bar"><div class="skill-fill"></div></div>
-          </div>
-          <div class="skill-row" style="--w:85%">
-            <span class="skill-name">文献综述 / Desk Research</span>
-            <div class="skill-bar"><div class="skill-fill"></div></div>
-          </div>
-          <div class="skill-row" style="--w:80%">
-            <span class="skill-name">服务设计 / Service Design</span>
-            <div class="skill-bar"><div class="skill-fill"></div></div>
+          <!-- ① 语言 -->
+          <p class="skill-block-label">① Language</p>
+          <div class="lang-badges">
+            <div class="lang-badge">
+              <span class="lang-badge-name">IELTS</span>
+              <span class="lang-badge-score">6.5</span>
+              <span class="lang-badge-sub">Speaking 6.5</span>
+            </div>
+            <div class="lang-badge">
+              <span class="lang-badge-name">CET-6</span>
+              <span class="lang-badge-score">✓</span>
+              <span class="lang-badge-sub">通过</span>
+            </div>
           </div>
 
-          <p class="skill-section-label">Design & Prototyping</p>
-          <div class="skill-row" style="--w:82%">
-            <span class="skill-name">Figma / 原型设计</span>
-            <div class="skill-bar"><div class="skill-fill"></div></div>
-          </div>
-          <div class="skill-row" style="--w:72%">
-            <span class="skill-name">XR 交互设计</span>
-            <div class="skill-bar"><div class="skill-fill"></div></div>
-          </div>
-          <div class="skill-row" style="--w:68%">
-            <span class="skill-name">Unity / XR Toolkit</span>
-            <div class="skill-bar"><div class="skill-fill"></div></div>
+          <!-- ② 专业技能 -->
+          <p class="skill-block-label">② Professional · Software</p>
+          <div class="skill-row" style="--w:90%"><span class="skill-name">Illustrator</span><div class="skill-bar"><div class="skill-fill"></div></div><span class="skill-pct">90%</span></div>
+          <div class="skill-row" style="--w:85%"><span class="skill-name">Lightroom</span><div class="skill-bar"><div class="skill-fill"></div></div><span class="skill-pct">85%</span></div>
+          <div class="skill-row" style="--w:80%"><span class="skill-name">Photoshop</span><div class="skill-bar"><div class="skill-fill"></div></div><span class="skill-pct">80%</span></div>
+          <div class="skill-row" style="--w:80%"><span class="skill-name">Figma</span><div class="skill-bar"><div class="skill-fill"></div></div><span class="skill-pct">80%</span></div>
+          <div class="skill-row" style="--w:75%"><span class="skill-name">Rhino / 建模</span><div class="skill-bar"><div class="skill-fill"></div></div><span class="skill-pct">75%</span></div>
+          <div class="skill-row" style="--w:70%"><span class="skill-name">Keyshot / 渲染</span><div class="skill-bar"><div class="skill-fill"></div></div><span class="skill-pct">70%</span></div>
+          <div class="skill-row" style="--w:70%"><span class="skill-name">Unity</span><div class="skill-bar"><div class="skill-fill"></div></div><span class="skill-pct">70%</span></div>
+          <div class="skill-row" style="--w:65%"><span class="skill-name">Blender</span><div class="skill-bar"><div class="skill-fill"></div></div><span class="skill-pct">65%</span></div>
+
+          <!-- ③ 其他技能 -->
+          <p class="skill-block-label">③ Other Capabilities</p>
+          <div class="other-skills-grid">
+            <div class="other-skill-card">
+              <span class="osk-icon">🤖</span>
+              <div class="osk-body">
+                <p class="osk-title">AI 工具</p>
+                <p class="osk-desc">熟悉主流 AI，擅长书写 prompt 高效完成设计与研究任务</p>
+              </div>
+            </div>
+            <div class="other-skill-card">
+              <span class="osk-icon">📊</span>
+              <div class="osk-body">
+                <p class="osk-title">Office / 汇报</p>
+                <p class="osk-desc">熟悉 MS Office，擅长 PPT 制作与演讲汇报</p>
+              </div>
+            </div>
+            <div class="other-skill-card">
+              <span class="osk-icon">📷</span>
+              <div class="osk-body">
+                <p class="osk-title">摄影</p>
+                <p class="osk-desc">掌握摄影技能，参与新闻片拍摄</p>
+                <span class="osk-stat">20+ 场次</span>
+              </div>
+            </div>
+            <div class="other-skill-card">
+              <span class="osk-icon">🎬</span>
+              <div class="osk-body">
+                <p class="osk-title">剪辑 / Vlog</p>
+                <p class="osk-desc">熟悉剪映，有丰富剪辑经验</p>
+                <span class="osk-stat">Vlog 1000+ 播放</span>
+              </div>
+            </div>
+            <div class="other-skill-card">
+              <span class="osk-icon">📖</span>
+              <div class="osk-body">
+                <p class="osk-title">小红书运营</p>
+                <p class="osk-desc">运营个人账号，持续输出设计与生活内容</p>
+                <span class="osk-stat">笔记累计 5w+ 浏览</span>
+              </div>
+            </div>
           </div>
 
-          <p class="skill-section-label">Software</p>
-          <div class="software-row">
-            <span class="sw-chip">Rhino</span>
-            <span class="sw-chip">Keyshot</span>
-            <span class="sw-chip">Photoshop</span>
-            <span class="sw-chip">Illustrator</span>
-            <span class="sw-chip">Lightroom</span>
-            <span class="sw-chip">Figma</span>
-            <span class="sw-chip">After Effects</span>
-          </div>
         </div>
       </div>
 
@@ -794,134 +438,85 @@
   </footer>
 </section>
 
-<!-- ══════════════ PROJECTS ══════════════ -->
+<!-- PROJECTS -->
 <section id="projects">
   <div class="projects-header">
     <h2>Projects</h2>
     <span class="count">04 CASE STUDIES</span>
   </div>
   <div class="projects-grid">
-
     <div class="project-card" onclick="openModal(0)">
       <div class="card-hover-overlay"></div>
       <div class="card-inner">
         <p class="card-num">01</p>
         <h3 class="card-title">留守儿童情感<br>可视化智能画框</h3>
-        <div class="card-tags">
-          <span class="tag">Product Design</span>
-          <span class="tag">Child User</span>
-          <span class="tag">Social Issue</span>
-        </div>
+        <div class="card-tags"><span class="tag">Product Design</span><span class="tag">Child User</span><span class="tag">Social Issue</span></div>
         <div class="card-arrow">查看案例 →</div>
       </div>
     </div>
-
     <div class="project-card" onclick="openModal(1)">
       <div class="card-hover-overlay"></div>
       <div class="card-inner">
         <p class="card-num">02</p>
         <h3 class="card-title">认知障碍老年人<br>家务辅助任务包</h3>
-        <div class="card-tags">
-          <span class="tag">UX Research</span>
-          <span class="tag">Product Design</span>
-          <span class="tag">Elder User</span>
-        </div>
+        <div class="card-tags"><span class="tag">UX Research</span><span class="tag">Product Design</span><span class="tag">Elder User</span></div>
         <div class="card-arrow">查看案例 →</div>
       </div>
     </div>
-
     <div class="project-card" onclick="openModal(2)">
       <div class="card-hover-overlay"></div>
       <div class="card-inner">
         <p class="card-num">03</p>
         <h3 class="card-title">校园艺术五感<br>疗愈空间服务系统</h3>
-        <div class="card-tags">
-          <span class="tag">Service Design</span>
-          <span class="tag">Campus</span>
-          <span class="tag">Mental Health</span>
-        </div>
+        <div class="card-tags"><span class="tag">Service Design</span><span class="tag">Campus</span><span class="tag">Mental Health</span></div>
         <div class="card-arrow">查看案例 →</div>
       </div>
     </div>
-
     <div class="project-card" onclick="openModal(3)">
       <div class="card-hover-overlay"></div>
       <div class="card-inner">
         <p class="card-num">04</p>
         <h3 class="card-title">阿尔茨海默日常<br>MR 共情体验</h3>
-        <div class="card-tags">
-          <span class="tag">MR</span>
-          <span class="tag">Empathy Design</span>
-          <span class="tag">XR Research</span>
-        </div>
+        <div class="card-tags"><span class="tag">MR</span><span class="tag">Empathy Design</span><span class="tag">XR Research</span></div>
         <div class="card-arrow">查看案例 →</div>
       </div>
     </div>
-
   </div>
-
   <footer>
     <p>© 2026 XIAO LIN LIN</p>
     <p><a href="mailto:xll1950408587@outlook.com">xll1950408587@outlook.com</a></p>
   </footer>
 </section>
 
-<!-- ══════════════ MORE ══════════════ -->
+<!-- MORE -->
 <section id="more">
   <div class="more-inner">
     <h2>More</h2>
-
-    <!-- 摄影作品 -->
     <div class="more-block">
       <p class="more-block-title">Photography</p>
       <div class="photo-grid">
-        <!--
-          ↓ 有真实图片时，替换每个 photo-placeholder 为：
-          <div class="photo-real">
-            <img src="photos/ivy-dawn.jpg" alt="Ivy Dawn" />
-          </div>
-        -->
-        <div class="photo-placeholder">
-          <span class="photo-caption">Ivy Dawn</span>
-        </div>
-        <div class="photo-placeholder">
-          <span class="photo-caption">Willow Village</span>
-        </div>
-        <div class="photo-placeholder">
-          <span class="photo-caption">Blue-tinged Moment</span>
-        </div>
+        <div class="photo-placeholder"><span class="photo-caption">Ivy Dawn</span></div>
+        <div class="photo-placeholder"><span class="photo-caption">Willow Village</span></div>
+        <div class="photo-placeholder"><span class="photo-caption">Blue-tinged Moment</span></div>
       </div>
     </div>
-
-    <!-- 社会实践 -->
     <div class="more-block">
       <p class="more-block-title">Social Practice</p>
       <ul class="practice-list">
         <li class="practice-item">
           <div class="practice-year">2023</div>
-          <div class="practice-content">
-            <h4>第十九届亚运会志愿者</h4>
-            <p>负责亚运会观众引导任务，累计志愿服务时长近 100 小时</p>
-          </div>
+          <div class="practice-content"><h4>第十九届亚运会志愿者</h4><p>负责亚运会观众引导任务，累计志愿服务时长近 100 小时</p></div>
         </li>
         <li class="practice-item">
           <div class="practice-year">2023</div>
-          <div class="practice-content">
-            <h4>宁波象山暑期艺术实践</h4>
-            <p>与团队共同创作艺术装置，利用废弃铝罐与海洋元素进行创作</p>
-          </div>
+          <div class="practice-content"><h4>宁波象山暑期艺术实践</h4><p>与团队共同创作艺术装置，利用废弃铝罐与海洋元素进行创作</p></div>
         </li>
         <li class="practice-item">
           <div class="practice-year">2022</div>
-          <div class="practice-content">
-            <h4>CELESTRON 国际营</h4>
-            <p>参与 Celestron 光学产品设计国际交流营，完成望远镜外观设计项目</p>
-          </div>
+          <div class="practice-content"><h4>CELESTRON 国际营</h4><p>参与 Celestron 光学产品设计国际交流营，完成望远镜外观设计项目</p></div>
         </li>
       </ul>
     </div>
-
-    <!-- 校园活动 -->
     <div class="more-block">
       <p class="more-block-title">Campus Activities</p>
       <div class="activity-tags">
@@ -934,34 +529,22 @@
         <span class="activity-tag">风光摄影师校园讲座</span>
       </div>
     </div>
-
-    <!-- 联系 -->
     <div class="more-block">
       <p class="more-block-title">Contact</p>
       <div class="contact-row">
-        <a href="mailto:xll1950408587@outlook.com" class="contact-link">
-          <span>Email</span>xll1950408587@outlook.com
-        </a>
-        <!-- ↓ 替换为你的真实 Instagram 链接 -->
-        <a href="https://www.instagram.com/yourprofile" target="_blank" class="contact-link">
-          <span>Instagram</span>@yourprofile
-        </a>
-        <!-- ↓ 替换为你的真实小红书链接 -->
-        <a href="https://www.xiaohongshu.com/user/profile/yourid" target="_blank" class="contact-link">
-          <span>小红书</span>@yourprofile
-        </a>
+        <a href="mailto:xll1950408587@outlook.com" class="contact-link"><span>Email</span>xll1950408587@outlook.com</a>
+        <a href="https://www.instagram.com/yourprofile" target="_blank" class="contact-link"><span>Instagram</span>@yourprofile</a><!-- ↓ 替换真实链接 -->
+        <a href="https://www.xiaohongshu.com/user/profile/yourid" target="_blank" class="contact-link"><span>小红书</span>@yourprofile</a><!-- ↓ 替换真实链接 -->
       </div>
     </div>
-
   </div>
-
   <footer>
     <p>© 2026 XIAO LIN LIN</p>
     <p><a href="mailto:xll1950408587@outlook.com">xll1950408587@outlook.com</a></p>
   </footer>
 </section>
 
-<!-- ══ 项目弹出层 ══ -->
+<!-- 弹出层 -->
 <div class="project-modal" id="projectModal">
   <div class="modal-backdrop" onclick="closeModal()"></div>
   <div class="modal-panel">
@@ -975,99 +558,41 @@
     <p class="modal-origin-label" id="modalOriginLabel" style="display:none">出发点</p>
     <p class="modal-origin" id="modalOrigin"></p>
     <p class="modal-result" id="modalResult"></p>
-    <a href="#" class="modal-pdf-btn" id="modalPdfBtn" target="_blank">
-      查看完整作品集 PDF →
-    </a>
+    <a href="#" class="modal-pdf-btn" id="modalPdfBtn" target="_blank">查看完整作品集 PDF →</a>
     <p style="font-family:var(--mono);font-size:10px;color:var(--ink-light);margin-top:10px;" id="pdfNote"></p>
   </div>
 </div>
 
 <script>
-  // ── 光标 ──
   const cursor = document.getElementById('cursor');
   const ring   = document.getElementById('cursorRing');
   document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top  = e.clientY + 'px';
-    setTimeout(() => {
-      ring.style.left = e.clientX + 'px';
-      ring.style.top  = e.clientY + 'px';
-    }, 80);
+    cursor.style.left = e.clientX+'px'; cursor.style.top = e.clientY+'px';
+    setTimeout(()=>{ ring.style.left = e.clientX+'px'; ring.style.top = e.clientY+'px'; },80);
   });
 
-  // ── 页面切换 ──
   function showPage(id) {
-    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    document.querySelectorAll('.nav-links a').forEach(a => {
-      a.classList.toggle('active', a.dataset.page === id);
-    });
-    window.scrollTo(0, 0);
-    setTimeout(initObservers, 50);
+    document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.dataset.page===id));
+    window.scrollTo(0,0);
+    setTimeout(initObservers,50);
   }
 
-  // ── 滚动动画 ──
   function initObservers() {
-    const els = document.querySelectorAll(
-      '.timeline-item, .skill-row, .award-item, .software-row, .practice-item'
-    );
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach((e, i) => {
-        if (e.isIntersecting) {
-          setTimeout(() => e.target.classList.add('visible'), i * 70);
-        }
-      });
-    }, { threshold: 0.1 });
-    els.forEach(el => obs.observe(el));
+    const els = document.querySelectorAll('.timeline-item,.skill-row,.award-item,.lang-badge,.other-skill-card,.practice-item');
+    const obs = new IntersectionObserver(entries=>{
+      entries.forEach((e,i)=>{ if(e.isIntersecting) setTimeout(()=>e.target.classList.add('visible'),i*60); });
+    },{threshold:0.1});
+    els.forEach(el=>obs.observe(el));
   }
   initObservers();
 
-  // ── 项目数据 ──
   const projects = [
-    {
-      num: '01',
-      title: '留守儿童情感可视化智能画框',
-      year: '2024',
-      type: 'Product Design · 社会议题',
-      methods: '文献综述 · 用户访谈 · 问卷 · 纪录片分析',
-      desc: '一款将情感可视化的智能相框。根据留守儿童在手环上的心情记录与语音描述生成报告，每月 AI 会根据记录生成对应情绪的画作。相关记录会云端同步给家人，画作配合文字解释，让家人更清晰直观地理解孩子的情绪状况，并根据 AI 建议应对孩子的情绪。',
-      origin: '中国农村"留守儿童"数量超过 6100 万人，相当于英国人口总和。其中儿童缺乏心理抚慰的问题尤为严重，可能导致不可逆的心理伤害。通过本产品，儿童可以自主产生属于自己的情绪画作，父母也因视觉的直观性更加理解孩子情绪，从而及时应对。',
-      result: '成果：通过编程与 3D 打印完成产品原型制作，测试了 AI 反映情绪的可用性',
-      pdf: ''
-    },
-    {
-      num: '02',
-      title: '轻中度认知障碍老年人家务辅助任务包',
-      year: '2024',
-      type: 'Product Design · UX Research',
-      methods: '文献综述 · 专家咨询 · 用户访谈 · 问卷',
-      desc: '以轻中度认知障碍中老年群体为主要用户，家务任务包中的任务卡片含有 NFC 芯片。家人可以通过卡片为老人派发家务任务；若老人因认知障碍忘记如何使用对应工具，可扫描 NFC 观看互动教学视频，强化肌肉记忆。工具包含别针式摄像头，可检测任务是否完成并收集健康数据，家人也可参与互动。',
-      origin: '轻度认知障碍老年人处于痴呆症过渡期，可通过物理干预恢复到正常认知水平，家务锻炼是有效选择之一。参考认知刺激疗法，以家务为核心主题使老年人体验游戏化，同时强化被依赖感与价值感。',
-      result: '成果：咨询相关领域专家并获认可；通过编程与打印完成基础原型制作',
-      pdf: ''
-    },
-    {
-      num: '03',
-      title: '校园艺术五感疗愈空间服务系统 Palette',
-      year: '2024',
-      type: 'Service Design · 校园心理健康',
-      methods: '桌面调研 · 竞品分析 · 实地调研（博物馆）· 专家访谈（心理咨询师）· 问卷',
-      desc: 'Palette 校园艺术五感疗愈空间服务系统，采用"设计 + 物联网"形式，针对在校学生心理疗愈需求，设计了含线上及线下触点的完整服务体系。用户可在线上 APP 记录心情与预约空间，在线下体验由"艺术 + 五感"延伸的互动装置，体验后可在 APP 反馈优化。若心理问题未缓解，可主动对接校园心理咨询师进一步解决。',
-      origin: '观察到青少年普遍存在心理问题，校内又缺少合适的解压疗愈设施，因此联动校内心理咨询体系，积极响应国家心理健康建设需求，设计一套完整的服务系统。',
-      result: '',
-      pdf: ''
-    },
-    {
-      num: '04',
-      title: '阿尔茨海默日常 MR 共情体验',
-      year: '2026',
-      type: 'MR · Empathy Design · XR Research',
-      methods: '文献综述 · 叙事设计 · MR 交互实现',
-      desc: '以阿尔茨海默症患者的日常生活为叙事主体，运用 MR 混合现实技术创造沉浸式共情体验。体验者以第一人称视角经历认知障碍患者的日常处境——熟悉的空间变得陌生、简单的任务变得困难——旨在建立大众对这一群体的真实感知与情感共鸣。',
-      origin: '延续本科阶段对认知障碍议题的持续研究，从 MCI 预防阶段转向已确诊患者的共情维度，探索 XR 技术在增强社会同理心方面的可能性。',
-      result: '已完成 · 交互逻辑完整，含多个 MR 交互触点',
-      pdf: ''
-    }
+    { num:'01', title:'留守儿童情感可视化智能画框', year:'2024', type:'Product Design · 社会议题', methods:'文献综述 · 用户访谈 · 问卷 · 纪录片分析', desc:'一款将情感可视化的智能相框。根据留守儿童在手环上的心情记录与语音描述生成报告，每月 AI 会根据记录生成对应情绪的画作。相关记录会云端同步给家人，画作配合文字解释，让家人更清晰直观地理解孩子的情绪状况，并根据 AI 建议应对孩子的情绪。', origin:'中国农村"留守儿童"数量超过 6100 万人，相当于英国人口总和。其中儿童缺乏心理抚慰的问题尤为严重，可能导致不可逆的心理伤害。通过本产品，儿童可以自主产生属于自己的情绪画作，父母也因视觉的直观性更加理解孩子情绪，从而及时应对。', result:'成果：通过编程与 3D 打印完成产品原型制作，测试了 AI 反映情绪的可用性', pdf:'' },
+    { num:'02', title:'轻中度认知障碍老年人家务辅助任务包', year:'2024', type:'Product Design · UX Research', methods:'文献综述 · 专家咨询 · 用户访谈 · 问卷', desc:'以轻中度认知障碍中老年群体为主要用户，家务任务包中的任务卡片含有 NFC 芯片。家人可以通过卡片为老人派发家务任务；若老人因认知障碍忘记如何使用对应工具，可扫描 NFC 观看互动教学视频，强化肌肉记忆。工具包含别针式摄像头，可检测任务是否完成并收集健康数据，家人也可参与互动。', origin:'轻度认知障碍老年人处于痴呆症过渡期，可通过物理干预恢复到正常认知水平，家务锻炼是有效选择之一。参考认知刺激疗法，以家务为核心主题使老年人体验游戏化，同时强化被依赖感与价值感。', result:'成果：咨询相关领域专家并获认可；通过编程与打印完成基础原型制作', pdf:'' },
+    { num:'03', title:'校园艺术五感疗愈空间服务系统 Palette', year:'2024', type:'Service Design · 校园心理健康', methods:'桌面调研 · 竞品分析 · 实地调研（博物馆）· 专家访谈（心理咨询师）· 问卷', desc:'Palette 校园艺术五感疗愈空间服务系统，采用"设计 + 物联网"形式，针对在校学生心理疗愈需求，设计了含线上及线下触点的完整服务体系。用户可在线上 APP 记录心情与预约空间，在线下体验由"艺术 + 五感"延伸的互动装置，体验后可在 APP 反馈优化。若心理问题未缓解，可主动对接校园心理咨询师进一步解决。', origin:'观察到青少年普遍存在心理问题，校内又缺少合适的解压疗愈设施，因此联动校内心理咨询体系，积极响应国家心理健康建设需求，设计一套完整的服务系统。', result:'', pdf:'' },
+    { num:'04', title:'阿尔茨海默日常 MR 共情体验', year:'2026', type:'MR · Empathy Design · XR Research', methods:'文献综述 · 叙事设计 · MR 交互实现', desc:'以阿尔茨海默症患者的日常生活为叙事主体，运用 MR 混合现实技术创造沉浸式共情体验。体验者以第一人称视角经历认知障碍患者的日常处境——熟悉的空间变得陌生、简单的任务变得困难——旨在建立大众对这一群体的真实感知与情感共鸣。', origin:'延续本科阶段对认知障碍议题的持续研究，从 MCI 预防阶段转向已确诊患者的共情维度，探索 XR 技术在增强社会同理心方面的可能性。', result:'已完成 · 交互逻辑完整，含多个 MR 交互触点', pdf:'' }
   ];
 
   function openModal(i) {
@@ -1076,58 +601,21 @@
     document.getElementById('modalTitle').textContent = p.title;
     document.getElementById('modalDesc').textContent  = p.desc;
     document.getElementById('modalResult').textContent = p.result;
-
-    const originEl = document.getElementById('modalOrigin');
-    const originLabel = document.getElementById('modalOriginLabel');
-    if (p.origin) {
-      originEl.textContent = p.origin;
-      originLabel.style.display = 'block';
-      originEl.style.display = 'block';
-    } else {
-      originLabel.style.display = 'none';
-      originEl.style.display = 'none';
-    }
-
-    document.getElementById('modalMeta').innerHTML = `
-      <div class="modal-meta-item">
-        <span class="modal-meta-label">Year</span>
-        <span class="modal-meta-value">${p.year}</span>
-      </div>
-      <div class="modal-meta-item">
-        <span class="modal-meta-label">Type</span>
-        <span class="modal-meta-value">${p.type}</span>
-      </div>
-      <div class="modal-meta-item">
-        <span class="modal-meta-label">Methods</span>
-        <span class="modal-meta-value">${p.methods}</span>
-      </div>
-    `;
-
-    const pdfBtn  = document.getElementById('modalPdfBtn');
-    const pdfNote = document.getElementById('pdfNote');
-    if (p.pdf) {
-      pdfBtn.href = p.pdf;
-      pdfBtn.classList.add('ready');
-      pdfNote.textContent = '';
-    } else {
-      pdfBtn.href = '#';
-      pdfBtn.classList.remove('ready');
-      // ↓ 你之后上传PDF后，在 projects 数组里把对应的 pdf: '' 改为实际路径即可
-      pdfNote.textContent = '作品集 PDF 即将上传';
-    }
-
+    const oEl=document.getElementById('modalOrigin'), oLb=document.getElementById('modalOriginLabel');
+    if(p.origin){oEl.textContent=p.origin;oLb.style.display='block';oEl.style.display='block';}
+    else{oLb.style.display='none';oEl.style.display='none';}
+    document.getElementById('modalMeta').innerHTML=`
+      <div class="modal-meta-item"><span class="modal-meta-label">Year</span><span class="modal-meta-value">${p.year}</span></div>
+      <div class="modal-meta-item"><span class="modal-meta-label">Type</span><span class="modal-meta-value">${p.type}</span></div>
+      <div class="modal-meta-item"><span class="modal-meta-label">Methods</span><span class="modal-meta-value">${p.methods}</span></div>`;
+    const btn=document.getElementById('modalPdfBtn'),note=document.getElementById('pdfNote');
+    if(p.pdf){btn.href=p.pdf;btn.classList.add('ready');note.textContent='';}
+    else{btn.href='#';btn.classList.remove('ready');note.textContent='作品集 PDF 即将上传';}
     document.getElementById('projectModal').classList.add('open');
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow='hidden';
   }
-
-  function closeModal() {
-    document.getElementById('projectModal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
-  });
+  function closeModal(){document.getElementById('projectModal').classList.remove('open');document.body.style.overflow='';}
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 </script>
 </body>
 </html>
